@@ -6,7 +6,7 @@ export default function MovieGrid({ favoriteActionLoadingId, favorites = [], mov
   }
 
   return (
-    <section className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+    <section className="grid grid-cols-2 items-stretch gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
       {movies.map((movie) => {
         const movieId = movie.tmdbId || movie.id;
         const isFavorite = favorites.some((favorite) => isSameMovie(favorite, movie));
