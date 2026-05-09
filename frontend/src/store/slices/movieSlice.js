@@ -17,13 +17,22 @@ export const fetchMovieById = createAsyncThunk('movies/fetchMovieById', async (i
   }
 });
 
-export const fetchFavorites = createAsyncThunk('movies/fetchFavorites', async (_, thunkApi) => {
-  try {
-    return await movieService.getFavorites();
-  } catch (error) {
-    return thunkApi.rejectWithValue(getApiError(error, 'Unable to fetch favorites'));
-  }
-});
+export const fetchFavorites = createAsyncThunk(
+  'movies/fetchFavorites',
+  async (_, thunkApi) => {
+    try {
+      return await movieService.getFavorites();
+    } catch (error) {
+      return thunkApi.rejectWithValue(getApiError(error, 'Unable to fetch favorites'));
+    }
+  },
+  {
+    condition: (_, { getState }) => {
+      const { isFavoritesLoading, favoritesLoaded } = getState().movies;
+      return !isFavoritesLoading && !favoritesLoaded;
+    },
+  },
+);
 
 export const addFavoriteMovie = createAsyncThunk('movies/addFavoriteMovie', async (movieId, thunkApi) => {
   try {
@@ -52,6 +61,7 @@ const movieSlice = createSlice({
       pages: 1,
     },
     favorites: [],
+    favoritesLoaded: false,
     selectedMovie: null,
     isLoading: false,
     isFavoritesLoading: false,
@@ -101,10 +111,12 @@ const movieSlice = createSlice({
       })
       .addCase(fetchFavorites.fulfilled, (state, action) => {
         state.isFavoritesLoading = false;
+        state.favoritesLoaded = true;
         state.favorites = action.payload;
       })
       .addCase(fetchFavorites.rejected, (state, action) => {
         state.isFavoritesLoading = false;
+        state.favoritesLoaded = false;
         state.favoritesError = action.payload;
       })
       .addCase(addFavoriteMovie.pending, (state, action) => {

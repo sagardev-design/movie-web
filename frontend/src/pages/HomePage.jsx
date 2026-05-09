@@ -3,11 +3,11 @@ import { ArrowDownUp, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import MovieGrid from '../components/movies/MovieGrid';
 import Loader from '../components/common/Loader';
-import { fetchMovies } from '../store/slices/movieSlice';
+import { addFavoriteMovie, fetchFavorites, fetchMovies, removeFavoriteMovie } from '../store/slices/movieSlice';
 
 export default function HomePage() {
   const dispatch = useDispatch();
-  const { movies, pagination, isLoading, error } = useSelector((state) => state.movies);
+  const { favoriteActionLoadingId, favorites, movies, pagination, isLoading, error } = useSelector((state) => state.movies);
   const [query, setQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
@@ -28,12 +28,28 @@ export default function HomePage() {
   }, [dispatch, query, sortOrder, page]);
 
   useEffect(() => {
+    dispatch(fetchFavorites());
+  }, [dispatch]);
+
+  useEffect(() => {
     setPage(1);
   }, [query, sortOrder]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setPage(1);
+  };
+
+  const handleFavoriteToggle = (movie) => {
+    const movieId = movie.tmdbId || movie.id;
+    const isFavorite = favorites.some((favorite) => isSameMovie(favorite, movie));
+
+    if (isFavorite) {
+      dispatch(removeFavoriteMovie(movieId));
+      return;
+    }
+
+    dispatch(addFavoriteMovie(movieId));
   };
 
   return (
@@ -72,7 +88,12 @@ export default function HomePage() {
       {error && <p className="rounded-md border border-red-400/30 bg-red-500/10 p-4 text-red-200">{error}</p>}
       {!isLoading && !error && (
         <>
-          <MovieGrid movies={movies} />
+          <MovieGrid
+            favoriteActionLoadingId={favoriteActionLoadingId}
+            favorites={favorites}
+            movies={movies}
+            onFavoriteToggle={handleFavoriteToggle}
+          />
           <div className="flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 sm:flex-row">
             <p className="text-sm text-stone-400">
               Page {pagination.page || page} of {pagination.pages || 1}
@@ -99,5 +120,14 @@ export default function HomePage() {
         </>
       )}
     </div>
+  );
+}
+
+function isSameMovie(firstMovie, secondMovie) {
+  return (
+    firstMovie.id === secondMovie.id ||
+    firstMovie.tmdbId === secondMovie.tmdbId ||
+    firstMovie.id === secondMovie.tmdbId ||
+    firstMovie.tmdbId === secondMovie.id
   );
 }

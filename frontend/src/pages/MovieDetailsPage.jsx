@@ -14,16 +14,16 @@ import {
 export default function MovieDetailsPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { selectedMovie, favorites, favoriteActionLoadingId, isLoading, error, favoritesError } = useSelector(
+  const { selectedMovie, favorites, favoritesLoaded, favoriteActionLoadingId, isLoading, error, favoritesError } = useSelector(
     (state) => state.movies,
   );
 
   useEffect(() => {
     dispatch(fetchMovieById(id));
-    if (!favorites.length) {
+    if (!favoritesLoaded) {
       dispatch(fetchFavorites());
     }
-  }, [dispatch, favorites.length, id]);
+  }, [dispatch, favoritesLoaded, id]);
 
   if (isLoading) return <Loader />;
   if (error) return <p className="text-red-200">{error}</p>;

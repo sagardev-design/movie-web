@@ -133,7 +133,7 @@ http://localhost:5000
 Swagger documentation:
 
 ```txt
-http://localhost:5000/api/docs
+https://movie-web-production-e629.up.railway.app/api/docs
 ```
 
 ## API Overview
@@ -171,17 +171,17 @@ GET /api/users/me
 Frontend deployed link:
 
 ```txt
-Add link here
+https://movie-web-phi-ebon.vercel.app/
 ```
 
 Backend deployed link:
 
 ```txt
-Add link here
+https://movie-web-production-e629.up.railway.app/
 ```
 
 Public GitHub repository:
 
 ```txt
-Add link here
+https://github.com/sagardev-design/movie-web.git
 ```

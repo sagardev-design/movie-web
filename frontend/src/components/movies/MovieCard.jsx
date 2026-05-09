@@ -1,8 +1,14 @@
 import { Heart, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function MovieCard({ movie }) {
+export default function MovieCard({ isBusy = false, isFavorite = false, movie, onFavoriteToggle }) {
   const rating = movie.rating ? Number(movie.rating).toFixed(1) : 'N/A';
+
+  const handleFavoriteClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onFavoriteToggle?.(movie);
+  };
 
   return (
     <article className="overflow-hidden rounded-lg border border-white/10 bg-[#181b1f]">
@@ -23,8 +29,18 @@ export default function MovieCard({ movie }) {
             <Star className="h-4 w-4 fill-current" />
             {rating}
           </span>
-          <button className="rounded-md border border-white/10 p-2 text-stone-300 transition hover:border-rose-400 hover:text-rose-300">
-            <Heart className="h-4 w-4" />
+          <button
+            type="button"
+            onClick={handleFavoriteClick}
+            disabled={isBusy}
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            className={`rounded-md border p-2 transition disabled:cursor-wait disabled:opacity-60 ${
+              isFavorite
+                ? 'border-rose-400 bg-rose-500/15 text-rose-200 hover:bg-rose-500/25'
+                : 'border-white/10 text-stone-300 hover:border-rose-400 hover:text-rose-300'
+            }`}
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
         </div>
       </div>
